@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include "constants.h"
 #include "util.h"
+#include <regex>
 
 using namespace std;
 
@@ -54,4 +55,19 @@ string ProcessParser::getCmd(string pid) {
         output=output+line;
     }
     return output;
+}
+
+vector<string> ProcessParser::getPidList() {
+    string path=Path::basePath();
+    vector<string> ls;
+    vector<string> pids;
+    read_directory(path, ls);
+    std::regex self_regex("[0-9]+");
+    for ( string ent : ls ) {
+        if(std::regex_search(ent, self_regex)) {
+            pids.push_back(ent);
+        }
+    }
+    return pids;
+
 }

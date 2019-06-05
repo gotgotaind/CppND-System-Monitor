@@ -1,5 +1,7 @@
 #include <string>
 #include <fstream>
+#include <sys/types.h>
+#include <dirent.h>
 
 // Classic helper function
 class Util {
@@ -54,4 +56,17 @@ void Util::getStream(std::string path, std::ifstream& stream){
         throw std::runtime_error("Non - existing PID");
     }
     //return stream;
+}
+
+
+
+ 
+void read_directory(const std::string& name, vector<string>& v)
+{
+    DIR* dirp = opendir(name.c_str());
+    struct dirent * dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        v.push_back(dp->d_name);
+    }
+    closedir(dirp);
 }
