@@ -17,7 +17,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "constants.h"
-
+#include "util.h"
 
 using namespace std;
 
@@ -44,3 +44,14 @@ private:
 };
 
 // TODO: Define all of the above functions below:
+string ProcessParser::getCmd(string pid) {
+    string path=Path::basePath()+pid+Path::cmdPath();
+    ifstream stream;
+    Util::getStream(path,stream);
+    string output;
+    string line;
+    while ( getline(stream,line) ) {
+        output=output+line;
+    }
+    return output;
+}
