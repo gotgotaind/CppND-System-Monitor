@@ -3,9 +3,13 @@
 using namespace std;
 
 int main() {
+    cout << "GetCmd:\n";
     std::cout << ProcessParser::getCmd("1") << "\n";
+    cout << "getPidList:\n";
     vector<string> pidlist=ProcessParser::getPidList();
     for( string ent : pidlist ) {
         cout << ent << "\n";
     }
+    cout << "getVmSize:\n";
+    std::cout << ProcessParser::getVmSize("1") << "\n";
 }

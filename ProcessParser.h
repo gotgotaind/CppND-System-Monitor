@@ -71,3 +71,18 @@ vector<string> ProcessParser::getPidList() {
     return pids;
 
 }
+
+string ProcessParser::getVmSize(string pid) {
+    string path=Path::basePath()+pid+Path::statusPath();
+    ifstream stream;
+    Util::getStream(path,stream);
+    string output;
+    string line;
+    std::regex self_regex("VmSize");
+    while ( getline(stream,line) ) {
+        if( std::regex_search(line, self_regex) ) {
+            output=output+line;
+        }
+    }
+    return output;
+}
