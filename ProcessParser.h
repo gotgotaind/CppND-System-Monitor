@@ -19,6 +19,7 @@
 #include "constants.h"
 #include "util.h"
 #include <regex>
+#include <iomanip>
 
 using namespace std;
 
@@ -88,6 +89,9 @@ string ProcessParser::getVmSize(string pid) {
 }
 
 std::string ProcessParser::getCpuPercent(string pid) {
+    // Note the result is wrong on my test container because uptime for a docker container is
+    // the host uptime not the container uptime. 
+    // 
     string path=Path::basePath()+pid+"/"+Path::statPath();
 
     ifstream stream;
@@ -97,9 +101,27 @@ std::string ProcessParser::getCpuPercent(string pid) {
     getline(stream,line);
 
     vector<string> vline=Util::split (line," ");
-    double time=stod(vline[13])+stod(vline[14]);
+    double jiffie_time=stod(vline[13])+stod(vline[14]);
+    double Hertz = (double) sysconf(_SC_CLK_TCK);
+    double cpu_percent=jiffie_time/Hertz/(double)ProcessParser::getSysUpTime()*100.00; 
+	
+    // All the rest is to format the double to 2 digits precision. I hope there is an easier way...
+    // Create an output string stream
+    std::ostringstream streamObj3;
+ 
+    // Set Fixed -Point Notation
+    streamObj3 << std::fixed;
+ 
+    // Set precision to 2 digits
+    streamObj3 << std::setprecision(2);
+ 
+    //Add double to stream
+    streamObj3 << cpu_percent;
+ 
+    // Get string from output string stream
+    std::string strObj3 = streamObj3.str();
 
-    return to_string(time);
+    return strObj3;
 }
 
 long int ProcessParser::getSysUpTime() {
