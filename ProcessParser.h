@@ -61,7 +61,7 @@ vector<string> ProcessParser::getPidList() {
     string path=Path::basePath();
     vector<string> ls;
     vector<string> pids;
-    read_directory(path, ls);
+    Util::read_directory(path, ls);
     std::regex self_regex("[0-9]+");
     for ( string ent : ls ) {
         if(std::regex_search(ent, self_regex)) {
@@ -85,4 +85,34 @@ string ProcessParser::getVmSize(string pid) {
         }
     }
     return output;
+}
+
+std::string ProcessParser::getCpuPercent(string pid) {
+    string path=Path::basePath()+pid+"/"+Path::statPath();
+
+    ifstream stream;
+    Util::getStream(path,stream);
+
+    string line;    
+    getline(stream,line);
+
+    vector<string> vline=Util::split (line," ");
+    double time=stod(vline[13])+stod(vline[14]);
+
+    return to_string(time);
+}
+
+long int ProcessParser::getSysUpTime() {
+    string path=Path::basePath()+Path::upTimePath();
+
+    ifstream stream;
+    Util::getStream(path,stream);
+
+    string line;    
+    getline(stream,line);
+
+    vector<string> vline=Util::split (line," ");
+    double time=stol(vline[0]);
+
+    return time;
 }

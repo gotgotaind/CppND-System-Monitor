@@ -3,6 +3,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+using namespace std;
+
 // Classic helper function
 class Util {
 
@@ -11,6 +13,8 @@ public:
 static std::string convertToTime ( long int input_seconds );
 static std::string getProgressBar(std::string percent);
 static void getStream(std::string path, std::ifstream& stream);
+static void read_directory(const std::string& name, vector<string>& v);
+static vector<string> split (string s, string delimiter);
 };
 
 std::string Util::convertToTime (long int input_seconds){
@@ -61,7 +65,7 @@ void Util::getStream(std::string path, std::ifstream& stream){
 
 
  
-void read_directory(const std::string& name, vector<string>& v)
+void Util::read_directory(const std::string& name, vector<string>& v)
 {
     DIR* dirp = opendir(name.c_str());
     struct dirent * dp;
@@ -69,4 +73,19 @@ void read_directory(const std::string& name, vector<string>& v)
         v.push_back(dp->d_name);
     }
     closedir(dirp);
+}
+
+vector<string> Util::split (string s, string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    string token;
+    vector<string> res;
+
+    while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
 }

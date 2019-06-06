@@ -12,4 +12,8 @@ int main() {
     }
     cout << "getVmSize:\n";
     std::cout << ProcessParser::getVmSize("1") << "\n";
+    cout << "getSysUpTime:\n";
+    std::cout << ProcessParser::getSysUpTime() << "\n";
+    cout << "getCpuPercent:\n";
+    std::cout << ProcessParser::getCpuPercent("1") << "\n";
 }
