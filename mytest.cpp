@@ -2,7 +2,8 @@
 #include "ProcessParser.h"
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
+    string pid=argv[1];
     cout << "GetCmd:\n";
     std::cout << ProcessParser::getCmd("1") << "\n";
     cout << "getPidList:\n";
@@ -15,9 +16,9 @@ int main() {
     cout << "getSysUpTime:\n";
     std::cout << ProcessParser::getSysUpTime() << "\n";
     cout << "getCpuPercent:\n";
-    std::cout << ProcessParser::getCpuPercent("640") << "\n";
+    std::cout << ProcessParser::getCpuPercent(pid) << "\n";
     cout << "getProcUptime:\n";
-    std::cout << ProcessParser::getProcUpTime("640") << "\n";
+    std::cout << ProcessParser::getProcUpTime(pid) << "\n";
     cout << "getProcUser:\n";
-    std::cout << ProcessParser::getProcUser("640") << "\n";    
+    std::cout << ProcessParser::getProcUser(pid) << "\n";    
 }
