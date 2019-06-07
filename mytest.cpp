@@ -20,5 +20,13 @@ int main(int argc, char* argv[]) {
     cout << "getProcUptime:\n";
     std::cout << ProcessParser::getProcUpTime(pid) << "\n";
     cout << "getProcUser:\n";
-    std::cout << ProcessParser::getProcUser(pid) << "\n";    
+    std::cout << ProcessParser::getProcUser(pid) << "\n";
+    cout << "getSysCpuPercent():\n";
+    std::string result;
+    for (auto const& s : ProcessParser::getSysCpuPercent()) { result += " "+s; }
+    std::cout << result << "\n";
+    cout << "getSysCpuPercent(\"1\"):\n";
+    result="";
+    for (auto const& s : ProcessParser::getSysCpuPercent("1")) { result += " "+s; }
+    std::cout << result << "\n";
 }

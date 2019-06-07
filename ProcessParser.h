@@ -147,5 +147,18 @@ string ProcessParser::getProcUser(string pid) {
 
 
 vector<string> ProcessParser::getSysCpuPercent(string coreNumber) {
-
+    string path=Path::basePath()+Path::statPath();
+    ifstream stream;
+    Util::getStream(path,stream);
+    string output;
+    string line;
+    std::regex self_regex("cpu"+coreNumber+" ");
+    while ( getline(stream,line) ) {
+        if( std::regex_search(line, self_regex) ) {
+            output=output+line;
+        }
+    }
+    return Util::split(output," ");
 }
+
+float ProcessParser::getSysRamPercent(){}
