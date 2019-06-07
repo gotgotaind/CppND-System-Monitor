@@ -101,9 +101,11 @@ std::string ProcessParser::getCpuPercent(string pid) {
     getline(stream,line);
 
     vector<string> vline=Util::split (line," ");
-    double jiffie_time=stod(vline[13])+stod(vline[14]);
+    double jiffie_cputime=stod(vline[13])+stod(vline[14]);
     double Hertz = (double) sysconf(_SC_CLK_TCK);
-    double cpu_percent=jiffie_time/Hertz/(double)ProcessParser::getSysUpTime()*100.00; 
+    double jiffie_process_age=(double)ProcessParser::getSysUpTime()*Hertz - stod(vline[21])+stod(vline[14]);
+    
+    double cpu_percent=jiffie_cputime/jiffie_process_age*100.00; 
 	
     // All the rest is to format the double to 2 digits precision. I hope there is an easier way...
     // Create an output string stream
@@ -134,7 +136,7 @@ long int ProcessParser::getSysUpTime() {
     getline(stream,line);
 
     vector<string> vline=Util::split (line," ");
-    double time=stol(vline[0]);
+    long int time=stol(vline[0]);
 
     return time;
 }

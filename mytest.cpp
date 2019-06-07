@@ -15,5 +15,5 @@ int main() {
     cout << "getSysUpTime:\n";
     std::cout << ProcessParser::getSysUpTime() << "\n";
     cout << "getCpuPercent:\n";
-    std::cout << ProcessParser::getCpuPercent("389") << "\n";
+    std::cout << ProcessParser::getCpuPercent("997") << "\n";
 }
