@@ -20,6 +20,10 @@
 #include "util.h"
 #include <regex>
 #include <iomanip>
+#include <pwd.h>
+#include <sys/stat.h>
+
+
 
 using namespace std;
 
@@ -89,38 +93,17 @@ string ProcessParser::getVmSize(string pid) {
 }
 
 std::string ProcessParser::getCpuPercent(string pid) {
-    // Note the result is wrong on my test container because uptime for a docker container is
-    // the host uptime not the container uptime. 
-    // 
-    string path=Path::basePath()+pid+"/"+Path::statPath();
-
-    ifstream stream;
-    Util::getStream(path,stream);
-
-    string line;    
-    getline(stream,line);
-
-    vector<string> vline=Util::split (line," ");
+    vector<string> vline=Util::pid_stat_vec(pid);
     double jiffie_cputime=stod(vline[13])+stod(vline[14]);
     double Hertz = (double) sysconf(_SC_CLK_TCK);
-    double jiffie_process_age=(double)ProcessParser::getSysUpTime()*Hertz - stod(vline[21])+stod(vline[14]);
+    double jiffie_process_age=(double)ProcessParser::getSysUpTime()*Hertz - stod(vline[21]);
     
     double cpu_percent=jiffie_cputime/jiffie_process_age*100.00; 
 	
     // All the rest is to format the double to 2 digits precision. I hope there is an easier way...
     // Create an output string stream
     std::ostringstream streamObj3;
- 
-    // Set Fixed -Point Notation
-    streamObj3 << std::fixed;
- 
-    // Set precision to 2 digits
-    streamObj3 << std::setprecision(2);
- 
-    //Add double to stream
-    streamObj3 << cpu_percent;
- 
-    // Get string from output string stream
+    streamObj3 << std::fixed << std::setprecision(2) << cpu_percent;
     std::string strObj3 = streamObj3.str();
 
     return strObj3;
@@ -139,4 +122,30 @@ long int ProcessParser::getSysUpTime() {
     long int time=stol(vline[0]);
 
     return time;
+}
+
+std::string ProcessParser::getProcUpTime(string pid) {
+    vector<string> vline=Util::pid_stat_vec(pid);
+    double Hertz = (double) sysconf(_SC_CLK_TCK);
+    double jiffie_process_age=(double)ProcessParser::getSysUpTime()*Hertz - stod(vline[21]);
+	
+    return to_string(jiffie_process_age/Hertz);
+}
+
+string ProcessParser::getProcUser(string pid) {
+    string path=Path::basePath()+pid;
+
+    // convert path to a C string
+    char * c_path = new char(path.length()+1);
+    strcpy(c_path,path.c_str());
+
+    struct stat info;
+    stat(c_path, & info);
+    struct passwd *pw = getpwuid(info.st_uid);
+    return pw->pw_name;
+}
+
+
+vector<string> ProcessParser::getSysCpuPercent(string coreNumber) {
+
 }

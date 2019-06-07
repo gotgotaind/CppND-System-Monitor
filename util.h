@@ -15,6 +15,7 @@ static std::string getProgressBar(std::string percent);
 static void getStream(std::string path, std::ifstream& stream);
 static void read_directory(const std::string& name, vector<string>& v);
 static vector<string> split (string s, string delimiter);
+static vector<string> pid_stat_vec(string pid);
 };
 
 std::string Util::convertToTime (long int input_seconds){
@@ -64,7 +65,7 @@ void Util::getStream(std::string path, std::ifstream& stream){
 
 
 
- 
+ // read the content of a directory into a vector of strings
 void Util::read_directory(const std::string& name, vector<string>& v)
 {
     DIR* dirp = opendir(name.c_str());
@@ -75,6 +76,7 @@ void Util::read_directory(const std::string& name, vector<string>& v)
     closedir(dirp);
 }
 
+//split a string delimited by a delimiter into a vector of strings
 vector<string> Util::split (string s, string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     string token;
@@ -89,3 +91,18 @@ vector<string> Util::split (string s, string delimiter) {
     res.push_back (s.substr (pos_start));
     return res;
 }
+
+//convert /proc/pid/stat into a vector of strings
+vector<string> Util::pid_stat_vec(string pid) {
+    string path=Path::basePath()+pid+"/"+Path::statPath();
+
+    ifstream stream;
+    Util::getStream(path,stream);
+
+    string line;    
+    getline(stream,line);
+
+    vector<string> vline=Util::split (line," ");
+    return vline;
+}
+
