@@ -29,4 +29,6 @@ int main(int argc, char* argv[]) {
     result="";
     for (auto const& s : ProcessParser::getSysCpuPercent("1")) { result += " "+s; }
     std::cout << result << "\n";
+    cout << "getSysRamPercent():\n";
+    std::cout << ProcessParser::getSysRamPercent() << "\n";
 }

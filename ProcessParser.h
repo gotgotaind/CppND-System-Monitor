@@ -161,4 +161,31 @@ vector<string> ProcessParser::getSysCpuPercent(string coreNumber) {
     return Util::split(output," ");
 }
 
-float ProcessParser::getSysRamPercent(){}
+float ProcessParser::getSysRamPercent(){
+    string path=Path::basePath()+Path::memInfoPath();
+
+    ifstream stream;
+    Util::getStream(path,stream);
+    
+    string MemFree_s;
+    string MemTotal_s;
+    std::regex MemFree_regex("MemFree:\\s*(\\d*) .*");
+    std::regex MemTotal_regex("MemTotal:\\s*(\\d*) .*");
+    std::smatch matches;
+
+    string line;
+    while ( getline(stream,line) ) {
+        if( std::regex_search(line, matches, MemFree_regex) ) {
+            MemFree_s=matches[1];
+            //cout << "MemFree: " << MemFree_s << "\n";
+        }
+        if( std::regex_search(line, matches, MemTotal_regex) ) {
+            MemTotal_s=matches[1];
+            //cout << "MemTotal: " << MemTotal_s << "\n";
+        }
+    }
+
+    double mem_total=stod(MemTotal_s);
+    double mem_free=stod(MemFree_s);
+    return (mem_total-mem_free)/mem_total*100;
+}
