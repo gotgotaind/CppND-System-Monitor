@@ -189,3 +189,17 @@ float ProcessParser::getSysRamPercent(){
     double mem_free=stod(MemFree_s);
     return (mem_total-mem_free)/mem_total*100;
 }
+
+string ProcessParser::getSysKernelVersion() {
+    string path=Path::basePath()+Path::versionPath();
+
+    ifstream stream;
+    Util::getStream(path,stream);
+
+    string line;    
+    getline(stream,line);
+
+    vector<string> vline=Util::split (line," ");
+    return vline[2];
+
+}

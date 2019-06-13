@@ -31,4 +31,6 @@ int main(int argc, char* argv[]) {
     std::cout << result << "\n";
     cout << "getSysRamPercent():\n";
     std::cout << ProcessParser::getSysRamPercent() << "\n";
+    cout << "getSysKernelVersion():\n";
+    std::cout << ProcessParser::getSysKernelVersion() << "\n";
 }
