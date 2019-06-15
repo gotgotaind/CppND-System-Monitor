@@ -227,6 +227,7 @@ int ProcessParser::getTotalThreads() {
         // because it's not like regexp can already get complicated
         // without having to escape backslashes...
         std::regex Threads_regex("Threads:\\s*(\\d*)");
+
         // A structure that will hold the strings matching the regular expression grouping (...)
         std::smatch matches;
 
@@ -241,4 +242,67 @@ int ProcessParser::getTotalThreads() {
         }         
     }
     return total_threads;
+}
+
+int ProcessParser::getTotalNumberOfProcesses()
+{
+    // Note that /proc/status "processes" line is wrong on my docker for windows, it's in the order of thousands
+    // while my host system does have about 200 and my container about 10
+    // Don't know where it gets this number from...
+    int total_procs=0;
+    // Iterating over all pids
+    for(string pid:getPidList())
+    {
+        total_procs++;
+    }
+    return total_procs;
+}
+
+int ProcessParser::getNumberOfRunningProcesses()
+{
+        string path=Path::basePath()+Path::statPath();
+
+        ifstream stream;
+        Util::getStream(path,stream);
+ 
+        std::regex procs_running_regex("procs_running\\s*(\\d*)");
+        std::smatch matches;
+
+        string line;
+        while ( getline(stream,line) ) {
+            if( std::regex_search(line, matches, procs_running_regex) ) {
+                return stoi(matches[1]);
+            }
+        }         
+}
+
+string ProcessParser::getOSName()
+{
+    string path="/etc/os-release";
+    ifstream stream;
+    Util::getStream(path,stream);
+
+    std::regex PRETTY_NAME_regex("PRETTY_NAME=\"(.*)\"");
+    std::smatch matches;
+
+    string line;
+    while ( getline(stream,line) ) {
+        if( std::regex_search(line, matches, PRETTY_NAME_regex) ) {
+            return (matches[1]);
+        }
+    }         
+}
+
+string ProcessParser::PrintCpuStats(vector<string> values1, vector<string> values2)
+{
+/*
+Because CPU stats can be calculated only if you take measures in two different time,
+this function has two parameters: two vectors of relevant values.
+We use a formula to calculate overall activity of processor.
+*/
+    float activeTime = getSysActiveCpuTime(values2) - getSysActiveCpuTime(values1);
+    float idleTime = getSysIdleCpuTime(values2) - getSysIdleCpuTime(values1);
+    float totalTime = activeTime + idleTime;
+    float result = 100.0*(activeTime / totalTime);
+    return to_string(result);
 }

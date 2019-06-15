@@ -35,5 +35,12 @@ int main(int argc, char* argv[]) {
     std::cout << ProcessParser::getSysKernelVersion() << "\n";
     cout << "getTotalThreads():\n";
     std::cout << ProcessParser::getTotalThreads() << "\n";
+    cout << "getTotalNumberOfProcesses():\n";
+    std::cout << ProcessParser::getTotalNumberOfProcesses() << "\n";
 
+    cout << "getNumberOfRunningProcesses():\n";
+    std::cout << ProcessParser::getNumberOfRunningProcesses() << "\n";
+    
+    cout << "getOSName():\n";
+    std::cout << ProcessParser::getOSName() << "\n";
 }
