@@ -203,3 +203,42 @@ string ProcessParser::getSysKernelVersion() {
     return vline[2];
 
 }
+
+int ProcessParser::getTotalThreads() {
+
+    // Initializing the result int to 0
+    int total_threads=0;
+    // Iterating over all pids
+    for(string pid:getPidList()) {
+        // Building the path to the pid /proc/pid/status file
+        string path=Path::basePath()+pid+Path::statusPath();
+        //cout << "Parsing " << path << "\n";
+
+        // Getting a stream to /proc/pid/status file
+        ifstream stream;
+        Util::getStream(path,stream);
+       
+        // Defining a regular expression to find the number of threads
+        // btw \s is 'space' class character, that is space or tab 
+        // or could be unicode spaces if this std::regexp lib supports it?
+        // and \d is 'digit'
+        // also the \ in \s and \d must be escaped, thus the \\s and \\d
+        // there's probably a way to avoid that to gain in clariry
+        // because it's not like regexp can already get complicated
+        // without having to escape backslashes...
+        std::regex Threads_regex("Threads:\\s*(\\d*)");
+        // A structure that will hold the strings matching the regular expression grouping (...)
+        std::smatch matches;
+
+        // Iterating on the stream lines
+        string line;
+        while ( getline(stream,line) ) {
+            if( std::regex_search(line, matches, Threads_regex) ) {
+                // Not sure why matches[1] is the good match. I suppose match[0] is the whole line?
+                total_threads=total_threads+stoi(matches[1]);
+                //cout << "MemTotal: " << MemTotal_s << "\n";
+            }
+        }         
+    }
+    return total_threads;
+}

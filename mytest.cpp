@@ -33,4 +33,7 @@ int main(int argc, char* argv[]) {
     std::cout << ProcessParser::getSysRamPercent() << "\n";
     cout << "getSysKernelVersion():\n";
     std::cout << ProcessParser::getSysKernelVersion() << "\n";
+    cout << "getTotalThreads():\n";
+    std::cout << ProcessParser::getTotalThreads() << "\n";
+
 }
