@@ -47,6 +47,8 @@ private:
     static string getOSName();
     static std::string PrintCpuStats(std::vector<std::string> values1, std::vector<std::string>values2);
     static bool isPidExisting(string pid);
+    static float getSysActiveCpuTime(vector<string> values);
+    static float getSysIdleCpuTime(vector<string>values);
 };
 
 // TODO: Define all of the above functions below:
@@ -293,6 +295,23 @@ string ProcessParser::getOSName()
     }         
 }
 
+float ProcessParser::getSysActiveCpuTime(vector<string> values)
+{
+    return (stof(values[S_USER]) +
+            stof(values[S_NICE]) +
+            stof(values[S_SYSTEM]) +
+            stof(values[S_IRQ]) +
+            stof(values[S_SOFTIRQ]) +
+            stof(values[S_STEAL]) +
+            stof(values[S_GUEST]) +
+            stof(values[S_GUEST_NICE]));
+}
+
+float ProcessParser::getSysIdleCpuTime(vector<string>values)
+{
+    return (stof(values[S_IDLE]) + stof(values[S_IOWAIT]));
+}
+
 string ProcessParser::PrintCpuStats(vector<string> values1, vector<string> values2)
 {
 /*
@@ -300,7 +319,7 @@ Because CPU stats can be calculated only if you take measures in two different t
 this function has two parameters: two vectors of relevant values.
 We use a formula to calculate overall activity of processor.
 */
-    float activeTime = getSysActiveCpuTime(values2) - getSysActiveCpuTime(values1);
+    float activeTime = ProcessParser::getSysActiveCpuTime(values2) - getSysActiveCpuTime(values1);
     float idleTime = getSysIdleCpuTime(values2) - getSysIdleCpuTime(values1);
     float totalTime = activeTime + idleTime;
     float result = 100.0*(activeTime / totalTime);

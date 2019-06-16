@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sys/types.h>
 #include <dirent.h>
+#include "constants.h"
 
 using namespace std;
 
