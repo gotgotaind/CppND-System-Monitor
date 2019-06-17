@@ -5,3 +5,4 @@ fi
 g++ -std=gnu++11 mytest.cpp
 ./a.out $PID
 ps auxw | grep $PID
+grep processes /proc/status

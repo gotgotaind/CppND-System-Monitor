@@ -17,7 +17,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "constants.h"
-#include "util.h"
+//#include "util.h"
 #include <regex>
 #include <iomanip>
 #include <pwd.h>
@@ -41,6 +41,7 @@ private:
     static vector<string> getSysCpuPercent(string coreNumber = "");
     static float getSysRamPercent();
     static string getSysKernelVersion();
+    static int getNumberOfCores();
     static int getTotalThreads();
     static int getTotalNumberOfProcesses();
     static int getNumberOfRunningProcesses();
@@ -154,10 +155,14 @@ vector<string> ProcessParser::getSysCpuPercent(string coreNumber) {
     Util::getStream(path,stream);
     string output;
     string line;
-    std::regex self_regex("cpu"+coreNumber+" ");
+    string cpu="cpu"+coreNumber;
+    //std::regex self_regex("cpu"+coreNumber+" ");
+    std::regex cpu_regex("cpu"+coreNumber+" +(.*?)$");
+    std::smatch matches;
     while ( getline(stream,line) ) {
-        if( std::regex_search(line, self_regex) ) {
-            output=output+line;
+        if( std::regex_search(line, matches, cpu_regex) ) {
+            output=cpu + " " + string(matches[1]);
+            //cout << "output: " << output << "\n";
         }
     }
     return Util::split(output," ");
@@ -297,6 +302,7 @@ string ProcessParser::getOSName()
 
 float ProcessParser::getSysActiveCpuTime(vector<string> values)
 {
+    //cout << (values[S_GUEST]) << "ZOBI\n";
     return (stof(values[S_USER]) +
             stof(values[S_NICE]) +
             stof(values[S_SYSTEM]) +
@@ -324,4 +330,19 @@ We use a formula to calculate overall activity of processor.
     float totalTime = activeTime + idleTime;
     float result = 100.0*(activeTime / totalTime);
     return to_string(result);
+}
+
+int ProcessParser::getNumberOfCores() {
+    string path=Path::basePath()+Path::statPath();
+    ifstream stream;
+    Util::getStream(path,stream);
+    int cpu_count=0;
+    string line;
+    std::regex self_regex("cpu\\d+ ");
+    while ( getline(stream,line) ) {
+        if( std::regex_search(line, self_regex) ) {
+            cpu_count++;
+        }
+    }
+    return cpu_count;
 }
